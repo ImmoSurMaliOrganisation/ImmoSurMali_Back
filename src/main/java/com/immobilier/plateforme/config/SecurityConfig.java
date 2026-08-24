@@ -15,10 +15,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/test",
+                                "/api/test-db",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
-                        ).permitAll() // Autorise l'accès libre à Swagger et au test
+                        ).permitAll() // Autorise le test serveur, le test BDD et Swagger
                         .anyRequest().authenticated()
                 );
         return http.build();
