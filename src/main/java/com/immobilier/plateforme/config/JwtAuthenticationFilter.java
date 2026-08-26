@@ -1,4 +1,5 @@
-package com.immobilier.plateforme.security;
+
+package com.immobilier.plateforme.config;
 
 import com.immobilier.plateforme.repository.UserRepository;
 import com.immobilier.plateforme.service.JwtService;

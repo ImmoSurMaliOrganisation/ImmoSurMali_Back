@@ -1,3 +1,8 @@
 package com.immobilier.plateforme.service;
 
-public interface UserService { }
+import com.immobilier.plateforme.model.dto.auth.AuthResponseDTO;
+import com.immobilier.plateforme.model.dto.auth.RegisterClientRequestDTO;
+
+public interface UserService {
+    AuthResponseDTO registerClient(RegisterClientRequestDTO request);
+}

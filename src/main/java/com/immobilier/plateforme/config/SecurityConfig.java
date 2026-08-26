@@ -1,8 +1,8 @@
+package com.immobilier.plateforme.config; 
 
 
-package com.immobilier.plateforme.config;
 
-import com.immobilier.plateforme.security.JwtAuthenticationFilter;
+import com.immobilier.plateforme.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
