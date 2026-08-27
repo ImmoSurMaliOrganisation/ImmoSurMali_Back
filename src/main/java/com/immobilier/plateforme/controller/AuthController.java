@@ -2,6 +2,7 @@ package com.immobilier.plateforme.controller;
 
 import com.immobilier.plateforme.model.dto.auth.AuthResponseDTO;
 import com.immobilier.plateforme.model.dto.auth.LoginRequestDTO;
+import com.immobilier.plateforme.model.dto.auth.RegisterClientRequestDTO;
 import com.immobilier.plateforme.model.dto.auth.RegisterProprietaireRequestDTO; // À importer après création du DTO
 import com.immobilier.plateforme.service.AuthService;
 import com.immobilier.plateforme.service.UserService; // Import du service utilisateur
@@ -31,7 +32,18 @@ public class AuthController {
         AuthResponseDTO response = authService.login(request);
         return ResponseEntity.ok(response);
     }
-
+    /**
+     * Endpoint d'inscription pour un client.
+     * URL : POST http://localhost:8080/api/v1/auth/register/client
+     *
+     * @param request Objet DTO contenant les informations du propriétaire
+     * @return ResponseEntity contenant le token JWT avec un statut 201 Created
+     */
+    @PostMapping("/register/client")
+    public ResponseEntity<AuthResponseDTO> registerClient(@RequestBody RegisterClientRequestDTO request) {
+        AuthResponseDTO response = userService.registerClient(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
     /**
      * Endpoint d'inscription pour un propriétaire particulier.
      * URL : POST http://localhost:8080/api/v1/auth/register/proprietaire
@@ -45,4 +57,5 @@ public class AuthController {
         // Critère d'acceptation : retourne un statut 201 Created
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 }
