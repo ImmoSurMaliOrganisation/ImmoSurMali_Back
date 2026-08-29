@@ -103,16 +103,15 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
-
+		<!-- Le starter officiel pour activer Flyway dans Spring Boot -->
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-database-postgresql</artifactId> <!-- Ou mysql selon votre BDD -->
-		</dependency>
-</dependencies>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency></dependencies>
 
 	<build>
 		<plugins>

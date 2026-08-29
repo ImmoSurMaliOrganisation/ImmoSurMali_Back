@@ -32,11 +32,14 @@ public interface UserRepository extends JpaRepository<User,Long> {
      * Récupère tous les utilisateurs pour l'administration avec filtrage, recherche et pagination.
      */
     @Query("SELECT u FROM User u WHERE " +
+            "(:role IS NULL OR u.role = :role) AND " +
             "(:search IS NULL OR :search = '' OR " +
-            "LOWER(u.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "u.telephone LIKE CONCAT('%', :search, '%')) " +
-            "ORDER BY u.dateCreation DESC")
-    Page<User> findAllUsersForAdmin(@Param("search") String search, Pageable pageable);
+            " LOWER(u.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            " LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            " LOWER(u.telephone) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<User> findUsersWithFilters(
+            @Param("role") Role role,
+            @Param("search") String search,
+            Pageable pageable);
 
 }

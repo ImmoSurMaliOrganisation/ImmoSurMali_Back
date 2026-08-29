@@ -18,12 +18,15 @@ public class AdminUserService {
 
     private final UserRepository userRepository;
 
-    public Page<User> getAllUsers(String search, int page, int size) {
-        // Nettoyage de la chaîne de recherche
-        String query = (search != null) ? search.trim() : "";
-        Pageable pageable = PageRequest.of(page, size);
+    @Transactional(readOnly = true)
+    public Page<User> searchUsers(Role role, String search, Pageable pageable) {
+        return userRepository.findUsersWithFilters(role, search, pageable);
+    }
 
-        return userRepository.findAllUsersForAdmin(query, pageable);
+    @Transactional(readOnly = true)
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
     }
 
     @Transactional

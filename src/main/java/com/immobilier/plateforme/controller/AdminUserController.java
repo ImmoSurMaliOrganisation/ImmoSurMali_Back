@@ -6,6 +6,7 @@ import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -21,15 +22,23 @@ public class AdminUserController {
 
     private final AdminUserService adminUserService;
 
+
     @GetMapping
-    public ResponseEntity<Page<User>> getAllUsers(
-            @RequestParam(required = false, defaultValue = "") String search,
+    public ResponseEntity<Page<User>> getUsers(
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<User> users = adminUserService.getAllUsers(search, page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String direction) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> users = adminUserService.searchUsers(role, search, pageable);
         return ResponseEntity.ok(users);
     }
+
     @PatchMapping("/{id}/toggle-status")
     public ResponseEntity<Void> toggleUserStatus(@PathVariable Long id) {
         adminUserService.toggleUserStatus(id);
