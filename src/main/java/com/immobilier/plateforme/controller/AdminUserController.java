@@ -1,0 +1,44 @@
+package com.immobilier.plateforme.controller;
+
+import com.immobilier.plateforme.enums.Role;
+import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
+import com.immobilier.plateforme.model.entity.User;
+import com.immobilier.plateforme.service.AdminUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/admin/users")
+@RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminUserController {
+
+    private final AdminUserService adminUserService;
+
+    @GetMapping
+    public ResponseEntity<Page<User>> getAllUsers(
+            @RequestParam(required = false, defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = adminUserService.getAllUsers(search, page, size);
+        return ResponseEntity.ok(users);
+    }
+    @PatchMapping("/{id}/toggle-status")
+    public ResponseEntity<Void> toggleUserStatus(@PathVariable Long id) {
+        adminUserService.toggleUserStatus(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        adminUserService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+}

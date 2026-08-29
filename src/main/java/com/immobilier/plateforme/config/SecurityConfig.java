@@ -3,11 +3,13 @@ package com.immobilier.plateforme.config;
 
 
 import com.immobilier.plateforme.config.JwtAuthenticationFilter;
+import org.springframework.security.config.Customizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,17 +33,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                // FORCER SPRING SECURITY À NE PAS CRÉER NI UTILISER DE SESSIONS HTTP
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Documentation OpenAPI / Swagger publique
                         .requestMatchers(
-                                "/api/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
-                        ).permitAll() // Routes publiques
-                        .anyRequest().authenticated() // Toutes les autres requêtes requièrent une authentification
-                )// Ajout du filtre JWT avant le filtre par défaut
+                        ).permitAll()
+
+                        // 2. Auth publique (login, register)
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // 3. Endpoints Admin (Accès STRICTEMENT réservé au rôle ADMIN)
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+
+                        // 4. Tout le reste de l'API requiert une authentification
+                        .anyRequest().authenticated()
+                )
+                // Filtre JWT
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
