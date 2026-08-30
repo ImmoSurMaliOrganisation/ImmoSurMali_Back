@@ -1,7 +1,15 @@
 package com.immobilier.plateforme.repository;
+
+import com.immobilier.plateforme.enums.Role;
+import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
 import com.immobilier.plateforme.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 
@@ -19,4 +27,19 @@ public interface UserRepository extends JpaRepository<User,Long> {
      * Utile pour la validation lors de la création/inscription d'un compte.
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Récupère tous les utilisateurs pour l'administration avec filtrage, recherche et pagination.
+     */
+    @Query("SELECT u FROM User u WHERE " +
+            "(:role IS NULL OR u.role = :role) AND " +
+            "(:search IS NULL OR :search = '' OR " +
+            " LOWER(u.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            " LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            " LOWER(u.telephone) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<User> findUsersWithFilters(
+            @Param("role") Role role,
+            @Param("search") String search,
+            Pageable pageable);
+
 }

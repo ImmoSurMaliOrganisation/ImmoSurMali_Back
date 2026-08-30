@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatut userStatus;
+    private UserStatut userStatut;
 
     @Column(name = "date_creation", updatable = false)
     @Builder.Default
