@@ -1,6 +1,7 @@
 package com.immobilier.plateforme.controller;
 
 import com.immobilier.plateforme.enums.Role;
+import com.immobilier.plateforme.enums.UserStatut;
 import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
 import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.service.AdminUserService;
@@ -39,10 +40,16 @@ public class AdminUserController {
         return ResponseEntity.ok(users);
     }
 
-    @PatchMapping("/{id}/toggle-status")
-    public ResponseEntity<Void> toggleUserStatus(@PathVariable Long id) {
-        adminUserService.toggleUserStatus(id);
+    @PatchMapping("/{id}/suspend")
+    public ResponseEntity<Void> suspendUser(@PathVariable Long id) {
+        adminUserService.updateUserStatus(id, UserStatut.SUSPENDU);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<User> activateUser(@PathVariable Long id) {
+        User updatedUser = adminUserService.updateUserStatus(id, UserStatut.ACTIF);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")

@@ -2,6 +2,7 @@ package com.immobilier.plateforme.service;
 
 import com.immobilier.plateforme.enums.Role;
 import com.immobilier.plateforme.enums.UserStatut;
+import com.immobilier.plateforme.exception.ResourceNotFoundException;
 import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
 import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.repository.UserRepository;
@@ -29,15 +30,18 @@ public class AdminUserService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
     }
 
-    @Transactional
-    public void toggleUserStatus(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + userId));
+    public User updateUserStatus(Long id, UserStatut newStatus) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'id : " + id));
 
-        user.setUserStatut(user.getUserStatut() == UserStatut.ACTIF ? UserStatut.SUSPENDU : UserStatut.ACTIF);
-        userRepository.save(user);
+        // Optionnel : Empêcher de modifier le statut d'un ADMIN par sécurité
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalStateException("Impossible de modifier le statut d'un administrateur.");
+        }
+
+        user.setUserStatut(newStatus);
+       return userRepository.save(user);
     }
-
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);

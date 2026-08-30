@@ -49,7 +49,7 @@ public class UserSeeder implements CommandLineRunner {
 
 
         // Clients de test
-        for (int i = 1; i <= 15; i++) {
+        for (int i = 1; i <= 150; i++) {
             String email = "client" + i + "@test.com";
             if (!userRepository.existsByEmail(email)) {
                 dummyUsers.add(User.builder()
@@ -65,7 +65,7 @@ public class UserSeeder implements CommandLineRunner {
         }
 
         // Propriétaires de test
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 42; i++) {
             String email = "proprio" + i + "@test.com";
             if (!userRepository.existsByEmail(email)) {
                 dummyUsers.add(User.builder()
@@ -81,7 +81,7 @@ public class UserSeeder implements CommandLineRunner {
         }
 
         // Agences de test
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 12; i++) {
             String email = "agence" + i + "@immo.com";
             if (!userRepository.existsByEmail(email)) {
                 dummyUsers.add(User.builder()
