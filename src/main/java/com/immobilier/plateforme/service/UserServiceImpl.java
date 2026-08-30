@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
                 .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
                 .telephone(request.getTelephone())
                 .role(com.immobilier.plateforme.enums.Role.CLIENT) 
-                .userStatus(com.immobilier.plateforme.enums.UserStatut.ACTIF) 
+                .userStatut(com.immobilier.plateforme.enums.UserStatut.ACTIF)
                 .isVerifier(true)
                 .dateCreation(LocalDateTime.now())
                 .build();
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                 .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
                 .telephone(request.getTelephone())
                 .role(com.immobilier.plateforme.enums.Role.PROPRIETAIRE_PART) // Assigne automatiquement le rôle demandé
-                .userStatus(com.immobilier.plateforme.enums.UserStatut.ACTIF) // Statut ACTIF automatique
+                .userStatut(com.immobilier.plateforme.enums.UserStatut.ACTIF) // Statut ACTIF automatique
                 .isVerifier(true)
                 .dateCreation(LocalDateTime.now())
                 .build();
