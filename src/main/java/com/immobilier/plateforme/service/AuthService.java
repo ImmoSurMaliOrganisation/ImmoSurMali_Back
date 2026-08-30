@@ -76,7 +76,7 @@ public class AuthService {
 
         // 6. Construire l'entité User unifiée avec le rôle AGENCE
         User agenceUser = User.builder()
-                .nom(dto.getNomAgence()) // Nom du représentant ou de contact principal
+                .nomAgence(dto.getNomAgence()) // Nom du représentant ou de contact principal
                 .email(dto.getEmail())
                 .motDePasse(passwordEncoder.encode(dto.getMotDePasse()))
                 .telephone(dto.getTelephone())
