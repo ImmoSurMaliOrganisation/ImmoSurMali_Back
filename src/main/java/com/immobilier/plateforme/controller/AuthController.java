@@ -5,7 +5,7 @@ import com.immobilier.plateforme.model.dto.auth.LoginRequestDTO;
 import com.immobilier.plateforme.model.dto.auth.RegisterAgenceRequestDTO;
 import com.immobilier.plateforme.model.dto.auth.RegisterClientRequestDTO;
 import com.immobilier.plateforme.model.dto.auth.RegisterProprietaireRequestDTO;
-import com.immobilier.plateforme.model.entity.Agence;
+import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.service.AuthService;
 import com.immobilier.plateforme.service.UserService;
 import jakarta.validation.Valid;
@@ -69,7 +69,8 @@ public class AuthController {
         @RequestPart(value = "nifDocument", required = false) MultipartFile nifDocument
     ) {
         try {
-            Agence nouvelleAgence = authService.registerAgence(dto, rccmDocument, nifDocument);
+            System.out.println("le conrtoller est commencer ");
+            User nouvelleAgence = authService.registerAgence(dto, rccmDocument, nifDocument);
             return ResponseEntity.status(HttpStatus.CREATED).body(nouvelleAgence);
         } catch (IllegalArgumentException e) {
             // Capture et renvoie les erreurs métiers (Ex: formats ou documents obligatoires manquants)

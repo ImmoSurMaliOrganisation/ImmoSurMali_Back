@@ -25,14 +25,20 @@ public class User implements UserDetails {
     private Long id;
 
     // Nom de la personne ou nom principal
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nom;
+
+    // --- Champ pour le nom de l'agence (utilisé si le rôle est AGENCE_IMMOBILIERE) ---
+    @Column(name = "nom_agence")
+    private String nomAgence;
 
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String motDePasse;
+
+    private String adresse;
 
     private String telephone;
 
@@ -50,9 +56,6 @@ public class User implements UserDetails {
     @Builder.Default
     private LocalDateTime dateCreation = LocalDateTime.now();
 
-    // --- Champ pour le nom de l'agence (utilisé si le rôle est AGENCE_IMMOBILIERE) ---
-    @Column(name = "nom_agence")
-    private String nomAgence;
 
     @Column(unique = true)
     private String rccm;

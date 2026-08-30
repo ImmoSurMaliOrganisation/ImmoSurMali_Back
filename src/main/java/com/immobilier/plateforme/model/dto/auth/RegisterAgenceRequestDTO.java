@@ -25,8 +25,8 @@ public class RegisterAgenceRequestDTO {
 
     @NotBlank(message = "Le numéro RCCM est obligatoire")
     @Pattern(
-        regexp = "^M[L|A]-[A-Z]{3}-\\d{4}-[A|B]-\\d{1,6}$", 
-        message = "Format de RCCM invalide"
+            regexp = "^[A-Z0-9\\s-_]{5,30}$",
+            message = "Format de RCCM invalide"
     )
     private String rccm;
 

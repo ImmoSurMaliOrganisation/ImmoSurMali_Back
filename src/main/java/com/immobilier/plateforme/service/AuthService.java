@@ -1,12 +1,11 @@
 package com.immobilier.plateforme.service;
 
 import com.immobilier.plateforme.enums.Role;
+import com.immobilier.plateforme.enums.UserStatut;
 import com.immobilier.plateforme.model.dto.auth.AuthResponseDTO;
 import com.immobilier.plateforme.model.dto.auth.LoginRequestDTO;
 import com.immobilier.plateforme.model.dto.auth.RegisterAgenceRequestDTO;
-import com.immobilier.plateforme.model.entity.Agence;
 import com.immobilier.plateforme.model.entity.User;
-import com.immobilier.plateforme.repository.AgenceRepository;
 import com.immobilier.plateforme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final AgenceRepository agenceRepository; 
     private final FileStorageService fileStorageService; 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -51,44 +49,48 @@ public class AuthService {
     /**
      * Logique métier complète pour inscrire une Agence Immobilière (Tâche ISM-20)
      */
-    public Agence registerAgence(RegisterAgenceRequestDTO dto, MultipartFile rccmDocument, MultipartFile nifDocument) {
-        
-        // 1. Validation de l'obligation stricte du fichier RCCM
+    public User registerAgence(RegisterAgenceRequestDTO dto, MultipartFile rccmDocument, MultipartFile nifDocument) {
+
+        // 1. Vérifier l'unicité de l'email
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Cet email est déjà enregistré.");
+        }
+
+        // 2. Vérifier l'unicité du numéro RCCM
+        if (dto.getRccm() != null && userRepository.existsByRccm(dto.getRccm())) {
+            throw new IllegalArgumentException("Ce numéro RCCM est déjà enregistré.");
+        }
+
+        // 3. Valider que le document RCCM est bien présent (obligatoire)
         if (rccmDocument == null || rccmDocument.isEmpty()) {
-            throw new IllegalArgumentException("Le document justificatif RCCM est obligatoire");
+            throw new IllegalArgumentException("Le document justificatif RCCM est obligatoire.");
+        }
+        // 4. Vérifier l'unicité du NIF (s'il est fourni)
+        if (dto.getNif() != null && !dto.getNif().isBlank() && userRepository.existsByNif(dto.getNif())) {
+            throw new IllegalArgumentException("Ce numéro NIF est déjà enregistré.");
         }
 
-        // 2. Vérification des doublons Email ou RCCM
-        if (agenceRepository.existsByEmail(dto.getEmail()) || agenceRepository.existsByRccm(dto.getRccm())) {
-            throw new IllegalArgumentException("Cet email ou RCCM est déjà enregistré");
-        }
+        // 5. Enregistrer les fichiers physiques et récupérer leurs chemins/URLs
+        String rccmDocUrl = fileStorageService.storeFile(rccmDocument);
+        String nifDocUrl = (nifDocument != null && !nifDocument.isEmpty()) ? fileStorageService.storeFile(nifDocument) : null;
 
-        // 3. Téléversement des documents justificatifs via le FileStorageService
-        String rccmUrl = fileStorageService.storeFile(rccmDocument);
-        String nifUrl = fileStorageService.storeFile(nifDocument);
+        // 6. Construire l'entité User unifiée avec le rôle AGENCE
+        User agenceUser = User.builder()
+                .nom(dto.getNomAgence()) // Nom du représentant ou de contact principal
+                .email(dto.getEmail())
+                .motDePasse(passwordEncoder.encode(dto.getMotDePasse()))
+                .telephone(dto.getTelephone())
+                .role(Role.AGENCE_IMMOBILIERE)
+                .userStatut(UserStatut.EN_ATTENTE) // En attente de validation administrative
+                .isVerifier(false)
+                .adresse(dto.getAdresse())
+                .rccm(dto.getRccm())
+                .rccmDocumentUrl(rccmDocUrl)
+                .nif(dto.getNif())
+                .nifDocumentUrl(nifDocUrl)
+                .build();
 
-        // 4. Instanciation et mapping de l'entité Agence
-        Agence agence = new Agence();
-        agence.setNomAgence(dto.getNomAgence());
-        agence.setEmail(dto.getEmail());
-        agence.setTelephone(dto.getTelephone());
-        agence.setAdresse(dto.getAdresse());
-        agence.setRccm(dto.getRccm());
-        agence.setRccmDocumentUrl(rccmUrl);
-        
-        // Données Optionnelles NIF
-        agence.setNif(dto.getNif());
-        agence.setNifDocumentUrl(nifUrl);
-
-        // 5. Hachage sécurisé du mot de passe (utilise l'instance PasswordEncoder globale)
-        agence.setMotDePasse(passwordEncoder.encode(dto.getMotDePasse()));
-
-        // 6. Assignation des statuts requis par les critères d'acceptation
-        agence.setRole(Role.AGENCE_IMMOBILIERE);
-        agence.setUserStatus("EN_ATTENTE");
-        agence.setVerifier(false);
-
-        // 7. Persistance finale dans PostgreSQL
-        return agenceRepository.save(agence);
+        // 7. Sauvegarder en base de données
+        return userRepository.save(agenceUser);
     }
 }
