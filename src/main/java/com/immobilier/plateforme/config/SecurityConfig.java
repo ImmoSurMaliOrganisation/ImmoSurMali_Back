@@ -1,8 +1,5 @@
-package com.immobilier.plateforme.config; 
+package com.immobilier.plateforme.config;
 
-
-
-import com.immobilier.plateforme.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +15,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
     /**
-     * Bean pour le hachage sécurisé des mots de passe.
+     * Bean pour le hachage sécurisé des mots de passe (utilisé par AuthService).
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    private final JwtAuthenticationFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,13 +31,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/**",
+                                "/api/**", // Autorise toutes les routes commençant par /api (inscriptions, tests, etc.)
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll() // Routes publiques
                         .anyRequest().authenticated() // Toutes les autres requêtes requièrent une authentification
-                )// Ajout du filtre JWT avant le filtre par défaut
+                )
+                // Ajout du filtre JWT avant le filtre par défaut
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

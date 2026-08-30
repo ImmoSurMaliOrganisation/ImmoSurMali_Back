@@ -1,0 +1,23 @@
+POST http://localhost:8081/api/v1/auth/register/agence
+Content-Type: multipart/form-data; boundary=boundary_ici
+
+--boundary_ici
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "nomAgence": "Mali Immobilier S.A.",
+  "email": "contact@mali-immo.ml",
+  "motDePasse": "SecuredPass2026",
+  "telephone": "+22320221122",
+  "rccm": "ML-BKO-2026-B-12345",
+  "adresse": "ACI 2000, Bamako"
+}
+
+--boundary_ici
+Content-Disposition: form-data; name="rccmDocument"; filename="rccm_test.pdf"
+Content-Type: application/pdf
+
+< ./pom.xml
+
+--boundary_ici--
