@@ -24,14 +24,21 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    // Nom de la personne ou nom principal
+    @Column(nullable = true)
     private String nom;
+
+    // --- Champ pour le nom de l'agence (utilisé si le rôle est AGENCE_IMMOBILIERE) ---
+    @Column(name = "nom_agence")
+    private String nomAgence;
 
     @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String motDePasse;
+
+    private String adresse;
 
     private String telephone;
 
@@ -48,6 +55,18 @@ public class User implements UserDetails {
     @Column(name = "date_creation", updatable = false)
     @Builder.Default
     private LocalDateTime dateCreation = LocalDateTime.now();
+
+
+    @Column(unique = true)
+    private String rccm;
+
+    @Column(name = "rccm_document_url")
+    private String rccmDocumentUrl;
+
+    private String nif;
+
+    @Column(name = "nif_document_url")
+    private String nifDocumentUrl;
 
 
     @Override

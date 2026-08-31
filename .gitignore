@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Exclure le dossier d'uploads local
+uploads/
+
+
 ### STS ###
 .apt_generated
 .classpath

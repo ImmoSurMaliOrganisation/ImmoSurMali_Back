@@ -29,6 +29,16 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByEmail(String email);
 
     /**
+     * vérification du RCCM
+    **/
+    boolean existsByRccm(String rccm);
+
+    /**
+     * vérification du NIF
+     **/
+    boolean existsByNif(String nif);
+
+    /**
      * Récupère tous les utilisateurs pour l'administration avec filtrage, recherche et pagination.
      */
     @Query("SELECT u FROM User u WHERE " +
