@@ -36,6 +36,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())// 1. Activer le CORS
                 // 2. Désactiver le CSRF (car API Stateless avec JWT)
                 .csrf(AbstractHttpConfigurer::disable)
+
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.disable()) // Désactive complètement la protection iframe pour le développement
+                )
                 // 3. Forcer le mode Stateless (pas de session HTTP)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,6 +47,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Autoriser les requêtes Preflight OPTIONS du navigateur
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Autoriser l'accès public au dossier des uploads
+                        .requestMatchers("/uploads/**").permitAll()
 
                         // Routes publiques (Auth, tests et Swagger)
                         .requestMatchers(

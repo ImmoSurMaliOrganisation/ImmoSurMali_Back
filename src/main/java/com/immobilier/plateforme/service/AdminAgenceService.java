@@ -28,8 +28,22 @@ public class AdminAgenceService {
      * @param pageable Paramètres de pagination et de tri
      * @return Une page d'utilisateurs ayant le rôle AGENCE
      */
+    @Transactional(readOnly = true)
     public Page<User> searchAgences(UserStatut statut, String search, Pageable pageable) {
         // On transmet bien le statut au UserRepository
         return userRepository.findUsersWithFilters(Role.AGENCE_IMMOBILIERE, statut, search, pageable);
+    }
+
+
+    /**
+     * Récupère une agence (utilisateur) par son ID pour la page de détails.
+     *
+     * @param id L'identifiant de l'agence
+     * @return L'entité User correspondante
+     */
+    @Transactional(readOnly = true)
+    public User getAgenceById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agence introuvable avec l'ID : " + id));
     }
 }

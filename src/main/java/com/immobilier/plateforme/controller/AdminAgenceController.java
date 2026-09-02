@@ -7,10 +7,7 @@ import com.immobilier.plateforme.service.AdminAgenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,5 +53,11 @@ public class AdminAgenceController {
         // Appel du service pour récupérer les agences filtrées
         Page<User> agences = adminAgenceService.searchAgences(statut, search, pageable);
         return ResponseEntity.ok(agences);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getAgenceById(@PathVariable Long id) {
+        User agence = adminAgenceService.getAgenceById(id);
+        return ResponseEntity.ok(agence);
     }
 }
