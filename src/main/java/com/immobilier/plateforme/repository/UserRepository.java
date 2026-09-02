@@ -1,6 +1,7 @@
 package com.immobilier.plateforme.repository;
 
 import com.immobilier.plateforme.enums.Role;
+import com.immobilier.plateforme.enums.UserStatut;
 import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
 import com.immobilier.plateforme.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,12 +44,15 @@ public interface UserRepository extends JpaRepository<User,Long> {
      */
     @Query("SELECT u FROM User u WHERE " +
             "(:role IS NULL OR u.role = :role) AND " +
+            "(:statut IS NULL OR u.userStatut = :statut) AND " +
             "(:search IS NULL OR :search = '' OR " +
             " LOWER(u.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            " LOWER(u.nomAgence) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             " LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             " LOWER(u.telephone) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<User> findUsersWithFilters(
             @Param("role") Role role,
+            @Param("statut") UserStatut statut,
             @Param("search") String search,
             Pageable pageable);
 

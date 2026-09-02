@@ -22,8 +22,8 @@ public class AdminUserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<User> searchUsers(Role role, String search, Pageable pageable) {
-        return userRepository.findUsersWithFilters(role, search, pageable);
+    public Page<User> searchUsers(Role role,UserStatut statut, String search, Pageable pageable) {
+        return userRepository.findUsersWithFilters(role, statut,search, pageable);
     }
 
     @Transactional(readOnly = true)
