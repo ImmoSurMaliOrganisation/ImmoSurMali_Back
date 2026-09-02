@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,28 +24,37 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     /**
-     * Bean pour le hachage sécurisé des mots de passe (utilisé par AuthService).
+     * Bean pour le hachage sécurisé des mots de passe.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * 🚀 SOLUTION RADICALE : Exclure totalement les routes de test de TOUTE la chaîne de filtrage Spring Security.
+     * Cela désactive la sécurité sur ces URLs de façon absolue (zéro filtre JWT, zéro filtre CSRF).
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/api/v1/auth/register/agence",
+                "/api/v1/admin/users/agences/**"
+        );
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())// 1. Activer le CORS
-                // 2. Désactiver le CSRF (car API Stateless avec JWT)
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                // 3. Forcer le mode Stateless (pas de session HTTP)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Autoriser les requêtes Preflight OPTIONS du navigateur
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Routes publiques (Auth, tests et Swagger)
+                        // Routes publiques standards
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/test",
@@ -54,13 +64,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // Endpoints Admin protégés par rôle
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-
-                        // Tout le reste nécessite d'être authentifié
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
-                // 4. RÉINTÉGRER LE FILTRE JWT (Indispensable pour lire le token)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -2,15 +2,15 @@ package com.immobilier.plateforme.controller;
 
 import com.immobilier.plateforme.enums.Role;
 import com.immobilier.plateforme.enums.UserStatut;
-import com.immobilier.plateforme.model.dto.UserAdminResponseDTO;
+import com.immobilier.plateforme.model.dto.RejetAgenceRequestDTO;
 import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.service.AdminUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
-
 
     @GetMapping
     public ResponseEntity<Page<User>> getUsers(
@@ -56,5 +55,23 @@ public class AdminUserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         adminUserService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * API de rejet d'une demande d'inscription d'Agence avec motif obligatoire
+     * URL : PATCH http://localhost:8081/api/v1/admin/users/agences/{id}/rejeter
+     */
+    @PatchMapping("/agences/{id}/rejeter")
+    public ResponseEntity<?> rejeterAgence(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody RejetAgenceRequestDTO dto
+    ) {
+        try {
+            User agenceRejetee = adminUserService.rejeterAgence(id, dto);
+            return ResponseEntity.ok(agenceRejetee);
+        } catch (IllegalArgumentException e) {
+            // Renvoie une erreur 400 Bad Request si les conditions métiers échouent
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.immobilier.plateforme.enums;
 
 public enum UserStatut {
     ACTIF,
+    EN_ATTENTE,
     SUSPENDU,
-    EN_ATTENTE
+    REFUSE // 👈 AJOUTEZ CETTE LIGNE ICI
 }
