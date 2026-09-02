@@ -79,23 +79,6 @@ public class UserSeeder implements CommandLineRunner {
                         .build());
             }
         }
-
-        // Agences de test
-        for (int i = 1; i <= 12; i++) {
-            String email = "agence" + i + "@immo.com";
-            if (!userRepository.existsByEmail(email)) {
-                dummyUsers.add(User.builder()
-                        .nom("Agence Immobilière " + i)
-                        .email(email)
-                        .motDePasse(defaultPassword)
-                        .telephone("+223200000" + (10 + i))
-                        .role(Role.AGENCE_IMMOBILIERE)
-                        .userStatut(UserStatut.ACTIF)
-                        .isVerifier(true)
-                        .build());
-            }
-        }
-
         if (!dummyUsers.isEmpty()) {
             userRepository.saveAll(dummyUsers);
             log.info("🚀 [SEEDER] {} utilisateurs fictifs ont été ajoutés à la BDD.", dummyUsers.size());
