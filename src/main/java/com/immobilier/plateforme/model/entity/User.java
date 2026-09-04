@@ -48,6 +48,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    // --- Champ pour stocker le motif de rejet (spécifique aux agences ou utilisateurs rejetés) ---
+    @Column(name = "motif_rejet", length = 500)
+    private String motifRejet;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatut userStatut;

@@ -13,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Contrôleur REST d'administration dédié à la gestion des Agences Immobilières
  * (validation des comptes, examen des justificatifs RCCM & NIF, suspension/approbation).
@@ -60,4 +63,28 @@ public class AdminAgenceController {
         User agence = adminAgenceService.getAgenceById(id);
         return ResponseEntity.ok(agence);
     }
+
+    /**
+            * Rejette la demande d'inscription d'une agence avec un motif obligatoire.
+            * URL : PATCH /api/v1/admin/agences/{id}/rejeter
+     */
+
+    @PatchMapping("/{id}/rejeter")
+    public ResponseEntity<Map<String, String>> rejeterAgence(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> requestBody) {
+
+        String motif = requestBody.get("motif");
+        if (motif == null || motif.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le motif de rejet est obligatoire.");
+        }
+
+        adminAgenceService.rejeterAgence(id, motif);
+
+        // Renvoie un HTTP 200 OK avec un message clair
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "La demande de l'agence a été rejetée avec succès.");
+        return ResponseEntity.ok(response);
+    }
 }
+

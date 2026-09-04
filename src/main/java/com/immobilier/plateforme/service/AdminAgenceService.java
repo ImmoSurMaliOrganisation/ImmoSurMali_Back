@@ -46,4 +46,32 @@ public class AdminAgenceService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agence introuvable avec l'ID : " + id));
     }
+    /**
+     * Rejette la demande d'inscription d'une agence avec un motif obligatoire.
+     */
+    @Transactional
+    public void rejeterAgence(Long id, String motif) {
+        User agence = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agence introuvable avec l'ID : " + id));
+
+        // Vérification que l'utilisateur est bien une agence immobilière
+        if (agence.getRole() != Role.AGENCE_IMMOBILIERE) {
+            throw new IllegalArgumentException("Cet utilisateur n'est pas une agence immobilière.");
+        }
+
+        // Vérification de l'état actuel de la demande
+        if (agence.getUserStatut() != UserStatut.EN_ATTENTE) {
+            throw new IllegalArgumentException("Impossible de rejeter cette demande. Statut actuel : " + agence.getUserStatut());
+        }
+
+        // Mise à jour du statut, du motif et passage de la vérification à false
+        agence.setUserStatut(UserStatut.REJETE);
+        agence.setMotifRejet(motif);
+        agence.setIsVerifier(true);
+
+        userRepository.save(agence);
+
+        // TODO: Déclencher l'envoi d'un email contenant le motif de rejet à l'agence
+    }
+
 }
