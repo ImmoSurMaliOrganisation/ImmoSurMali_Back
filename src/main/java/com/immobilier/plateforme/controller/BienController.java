@@ -1,8 +1,12 @@
 package com.immobilier.plateforme.controller;
 
+import com.immobilier.plateforme.model.dto.villa.CreateVillaRequestDTO;
+import com.immobilier.plateforme.model.dto.villa.VillaResponseDTO;
 import com.immobilier.plateforme.model.dto.appartement.AppartementResponseDTO;
 import com.immobilier.plateforme.model.dto.appartement.CreateAppartementRequestDTO;
 import com.immobilier.plateforme.service.AppartementService;
+import com.immobilier.plateforme.service.VillaService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +25,11 @@ import java.util.UUID;
 @RequestMapping("/api/v1/biens")
 @RequiredArgsConstructor
 public class BienController {
+
     private final AppartementService appartementService;
+    private final VillaService villaService;
+
+    // --- ENDPOINTS APPARTEMENTS ---
 
     /**
      * Endpoint d'enregistrement d'un appartement avec photos.
@@ -62,5 +70,37 @@ public class BienController {
     @GetMapping("/appartements/{id}")
     public ResponseEntity<AppartementResponseDTO> getAppartementById(@PathVariable UUID id) {
         return ResponseEntity.ok(appartementService.getAppartementById(id));
+    }
+
+    // --- ENDPOINTS VILLAS ---
+
+    @PostMapping(value = "/createVilla", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Créer une nouvelle villa avec des images")
+    public ResponseEntity<VillaResponseDTO> createVilla(
+            @RequestPart("data") @Valid CreateVillaRequestDTO dto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images) {
+
+        VillaResponseDTO nouvelleVilla = villaService.createVilla(dto, images);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nouvelleVilla);
+    }
+
+    @GetMapping("/villas")
+    @Operation(summary = "Récupérer la liste paginée des villas")
+    public ResponseEntity<Page<VillaResponseDTO>> getAllVillas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(villaService.getAllVillas(pageable));
+    }
+
+    @GetMapping("/villas/{id}")
+    @Operation(summary = "Récupérer les détails d'une villa par son ID")
+    public ResponseEntity<VillaResponseDTO> getVillaById(@PathVariable UUID id) {
+        return ResponseEntity.ok(villaService.getVillaById(id));
     }
 }

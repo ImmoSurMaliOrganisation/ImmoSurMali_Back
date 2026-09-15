@@ -6,6 +6,7 @@ CREATE TABLE villas (
     id UUID PRIMARY KEY,
     surface_terrain DECIMAL(10, 2) NOT NULL,
     nombre_facades INT DEFAULT 4,
+    nombre_chambres INT DEFAULT 0,
     jardin BOOLEAN DEFAULT FALSE,
     surface_jardin DECIMAL(10, 2),
     piscine BOOLEAN DEFAULT FALSE,
