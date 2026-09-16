@@ -11,6 +11,7 @@ import com.immobilier.plateforme.model.entity.Media;
 import com.immobilier.plateforme.model.entity.User;
 import com.immobilier.plateforme.repository.AppartementRepository;
 import com.immobilier.plateforme.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,10 @@ public class AppartementService {
 
     @Transactional
     public AppartementResponseDTO createAppartement(CreateAppartementRequestDTO dto, MultipartFile[] images) {
-        User proprietaire = userRepository.findById(dto.getProprietaireId())
-                .orElseThrow(() -> new RuntimeException("Propriétaire introuvable avec l'ID : " + dto.getProprietaireId()));
+        // 2. Récupération sécurisée du propriétaire via le token de l'utilisateur connecté
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User proprietaire = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Utilisateur connecté introuvable"));
 
         Role role = proprietaire.getRole();
         boolean estAutorise = role == Role.PROPRIETAIRE_PART

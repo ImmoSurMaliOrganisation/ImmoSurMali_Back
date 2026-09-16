@@ -13,6 +13,7 @@ import com.immobilier.plateforme.repository.VillaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +33,11 @@ public class VillaServiceImpl implements VillaService {
     @Transactional
     public VillaResponseDTO createVilla(CreateVillaRequestDTO dto, MultipartFile[] images) {
 
-        User proprietaire = userRepository.findById(dto.getProprietaireId())
-                .orElseThrow(() -> new RuntimeException("Propriétaire introuvable avec l'ID : " + dto.getProprietaireId()));
+        //  Récupération sécurisée du propriétaire via le token de l'utilisateur connecté
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User proprietaire = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Utilisateur connecté introuvable"));
+
 
         Role role = proprietaire.getRole();
         boolean estAutorise = role == Role.PROPRIETAIRE_PART

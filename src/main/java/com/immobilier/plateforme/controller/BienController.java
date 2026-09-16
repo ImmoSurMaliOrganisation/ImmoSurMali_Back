@@ -1,10 +1,13 @@
 package com.immobilier.plateforme.controller;
 
+import com.immobilier.plateforme.model.dto.terrain.CreateTerrainRequestDTO;
+import com.immobilier.plateforme.model.dto.terrain.TerrainResponseDTO;
 import com.immobilier.plateforme.model.dto.villa.CreateVillaRequestDTO;
 import com.immobilier.plateforme.model.dto.villa.VillaResponseDTO;
 import com.immobilier.plateforme.model.dto.appartement.AppartementResponseDTO;
 import com.immobilier.plateforme.model.dto.appartement.CreateAppartementRequestDTO;
 import com.immobilier.plateforme.service.AppartementService;
+import com.immobilier.plateforme.service.TerrainService;
 import com.immobilier.plateforme.service.VillaService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -28,6 +31,7 @@ public class BienController {
 
     private final AppartementService appartementService;
     private final VillaService villaService;
+    private final TerrainService terrainService;
 
     // --- ENDPOINTS APPARTEMENTS ---
 
@@ -36,7 +40,7 @@ public class BienController {
      * Consomme du multipart/form-data.
      */
 
-    @PostMapping(value = "/appartements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/createAppartement", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AppartementResponseDTO> createAppartement(
             @RequestPart("data") @Valid CreateAppartementRequestDTO dto,
             @RequestPart(value = "images", required = false) MultipartFile[] images) {
@@ -102,5 +106,39 @@ public class BienController {
     @Operation(summary = "Récupérer les détails d'une villa par son ID")
     public ResponseEntity<VillaResponseDTO> getVillaById(@PathVariable UUID id) {
         return ResponseEntity.ok(villaService.getVillaById(id));
+    }
+
+
+
+
+    // --- ENDPOINTS TERRAINS ---
+
+    @PostMapping(value = "/createTerrain", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Créer un nouveau terrain avec des images")
+    public ResponseEntity<TerrainResponseDTO> createTerrain(
+            @RequestPart("data") @Valid CreateTerrainRequestDTO dto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images) {
+
+        TerrainResponseDTO nouveauTerrain = terrainService.createTerrain(dto, images);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nouveauTerrain);
+    }
+    @GetMapping("/terrains")
+    @Operation(summary = "Récupérer la liste paginée des terrains")
+    public ResponseEntity<Page<TerrainResponseDTO>> getAllTerrains(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(terrainService.getAllTerrains(pageable));
+    }
+
+    @GetMapping("/terrains/{id}")
+    @Operation(summary = "Récupérer les détails d'un terrain par son ID")
+    public ResponseEntity<TerrainResponseDTO> getTerrainById(@PathVariable UUID id) {
+        return ResponseEntity.ok(terrainService.getTerrainById(id));
     }
 }

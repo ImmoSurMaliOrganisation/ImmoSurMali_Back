@@ -1,6 +1,7 @@
-package com.immobilier.plateforme.model.dto.villa;
+package com.immobilier.plateforme.model.dto.terrain;
 
 import com.immobilier.plateforme.enums.StatutBien;
+import com.immobilier.plateforme.enums.TypeTerrain;
 import com.immobilier.plateforme.model.dto.MediaResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,9 +14,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VillaResponseDTO {
+public class TerrainResponseDTO {
 
-    // Champs hérités du Bien parent
+    // --- Champs communs (hérités de Bien) ---
     private UUID id;
     private String titre;
     private String description;
@@ -28,16 +29,18 @@ public class VillaResponseDTO {
     private Double latitude;
     private Double longitude;
     private LocalDateTime createdAt;
-
-    // Champs spécifiques à la Villa
-    private Double surfaceTerrain;
-    private Integer nombreChambres;
-    private Integer nombreFacades;
-    private Boolean jardin;
-    private Double surfaceJardin;
-    private Boolean piscine;
-    private Boolean garage;
-
-    // Fichiers multimédias associés
     private List<MediaResponseDTO> medias;
+
+    // --- Champs spécifiques au Terrain ---
+    private TypeTerrain typeTerrain;
+    private Double superficieTotale;
+    private Integer nombreFacades;
+    private String zonage;
+    private Boolean viabilise;
+    private Boolean cloture;
+    private Boolean titreFoncier;
+    private Boolean eau;
+    private Boolean electricite;
+    private Boolean accesGoudronne;
+    private Boolean assainissement;
 }

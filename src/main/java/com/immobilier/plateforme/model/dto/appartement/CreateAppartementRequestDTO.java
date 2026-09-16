@@ -34,9 +34,6 @@ public class CreateAppartementRequestDTO {
 
     private Double longitude;
 
-    @NotNull(message = "L'ID du propriétaire est obligatoire")
-    private Long proprietaireId;
-
     // --- CHAMPS SPÉCIFIQUES (APPARTEMENT) ---
     @Min(value = 0, message = "Le nombre de chambres doit être positif")
     private Integer nombreChambres;

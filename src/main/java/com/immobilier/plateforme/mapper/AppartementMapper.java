@@ -30,10 +30,7 @@ public class AppartementMapper {
         dto.setAdresse(appartement.getAdresse());
         dto.setLatitude(appartement.getLatitude());
         dto.setLongitude(appartement.getLongitude());
-
-        if (appartement.getProprietaire() != null) {
-            dto.setProprietaireId(appartement.getProprietaire().getId());
-        }
+        
         dto.setCreatedAt(appartement.getCreatedAt());
 
         // Attributs spécifiques à Appartement
