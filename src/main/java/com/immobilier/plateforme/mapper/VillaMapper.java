@@ -31,9 +31,7 @@ public class VillaMapper {
         dto.setAdresse(villa.getAdresse());
         dto.setLatitude(villa.getLatitude());
         dto.setLongitude(villa.getLongitude());
-        if (villa.getProprietaire() != null) {
-            dto.setProprietaireId(villa.getProprietaire().getId());
-        }
+
         dto.setCreatedAt(villa.getCreatedAt());
 
         // Champs spécifiques à Villa

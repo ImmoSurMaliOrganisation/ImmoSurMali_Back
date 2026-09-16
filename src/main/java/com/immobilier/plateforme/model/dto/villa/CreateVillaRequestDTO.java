@@ -43,9 +43,6 @@ public class CreateVillaRequestDTO {
 
     private Double longitude;
 
-    @NotNull(message = "L'ID du propriétaire est obligatoire")
-    private Long proprietaireId;
-
     // --- Attributs spécifiques requis pour l'entité Villa ---
     @NotNull(message = "La surface du terrain est obligatoire")
     @Positive(message = "La surface du terrain doit être supérieure à 0")

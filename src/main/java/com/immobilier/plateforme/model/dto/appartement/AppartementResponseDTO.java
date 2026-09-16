@@ -24,7 +24,6 @@ public class AppartementResponseDTO {
     private String adresse;
     private Double latitude;
     private Double longitude;
-    private Long proprietaireId;
     private LocalDateTime createdAt;
 
     // Attributs spécifiques Appartement
